@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SalesPredictor - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section {
+            background-color: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 400px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 0.5s ease-out forwards 0.2s;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 1.1em;
+        }
+
+        .error {
+            color: #dc2626;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
+    <nav class="bg-blue-600 text-white p-4 w-full fixed top-0">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-xl font-bold flex items-center gap-2">
+                <i class="fas fa-chart-line"></i> SalesPredictor
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto flex flex-col items-center justify-center mt-16">
+        <div class="section">
+            <h1 class="text-2xl font-bold mb-6 text-center flex items-center justify-center gap-2">
+                <i class="fas fa-sign-in-alt"></i> Welcome Back
+            </h1>
+            
+            {% if error %}
+                <div class="error">
+                    <i class="fas fa-exclamation-circle"></i> {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="POST" class="space-y-4">
+                <div class="input-group">
+                    <label for="email" class="block text-gray-700 font-medium mb-1 flex items-center gap-2">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    <div class="relative">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="email" name="email" required 
+                               class="w-full pl-10 pr-4 py-2 border rounded focus:border-blue-500 focus:ring-blue-500"
+                               placeholder="your@email.com">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="password" class="block text-gray-700 font-medium mb-1 flex items-center gap-2">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <div class="relative">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password" name="password" required 
+                               class="w-full pl-10 pr-4 py-2 border rounded focus:border-blue-500 focus:ring-blue-500"
+                               placeholder="••••••••">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center gap-2">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+
+            <div class="mt-4 text-center text-gray-600">
+                Don't have an account? 
+                <a href="/signup" class="text-blue-600 hover:text-blue-800 font-medium">Sign up</a>
+            </div>
+        </div>
+
+        <footer class="mt-8 text-gray-500 text-sm">
+            © 2025 SalesPredictor. All rights reserved.
+        </footer>
+    </div>
+</body>
+</html>

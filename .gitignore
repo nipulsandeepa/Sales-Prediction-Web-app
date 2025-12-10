@@ -1,0 +1,33 @@
+# Environment variables
+.env
+
+# Firebase service account key
+serviceAccountKey.json
+
+# Model files
+model.pkl
+model_columns.json
+
+# CSV or sensitive data
+*.csv
+
+# Cache & Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Logs
+*.log
+
+# VSCode settings
+.vscode/
+
+# Bytecode
+*.pyo
+
+# Flask session files
+instance/
+
+# Docker stuff
+*.tar

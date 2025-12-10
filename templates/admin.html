@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SalesPredictor</title>
+    <!-- Add Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --header-height: 80px;
+            --card-border-radius: 10px;
+        }
+        
+        body { 
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .sidebar {
+            position: fixed;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: linear-gradient(180deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-brand {
+            padding: 1rem 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-right: 4rem;
+            letter-spacing: 0.05rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-item {
+            padding: 0.75rem 1.5rem;
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-item:hover, .sidebar-item.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            margin-bottom: 20px;
+            border-radius: var(--card-border-radius);
+        }
+        
+        .user-greeting {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .card {
+            border: none;
+            border-radius: var(--card-border-radius);
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            padding: 1rem 1.35rem;
+        }
+       
+
+.card-header .btn-link {
+    text-decoration: none !important;
+    position: relative;
+    padding-right: 2rem;
+}
+
+.card-header .btn-link:hover {
+    text-decoration: none !important;
+}
+
+.card-header .btn-link i.fa-chevron-down {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease;
+}
+
+.card-header .btn-link[aria-expanded="true"] i.fa-chevron-down {
+    transform: translateY(-50%) rotate(180deg);
+}
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .stat-card {
+            color: white;
+            border-radius: var(--card-border-radius);
+            overflow: hidden;
+        }
+        
+        .stat-card .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-card .stat-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card .stat-icon {
+            font-size: 2rem;
+            opacity: 0.3;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+        
+        .chart-container { 
+            position: relative; 
+            height: 300px; 
+            width: 100%; 
+        }
+        
+        .table-responsive { 
+            max-height: 400px; 
+        }
+        
+        /* Color classes for stat cards */
+        .bg-primary { background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); }
+        .bg-success { background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%); }
+        .bg-info { background: linear-gradient(135deg, #36b9cc 0%, #258391 100%); }
+        .bg-warning { background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%); }
+        .bg-danger { background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%); }
+        .bg-secondary { background: linear-gradient(135deg, #858796 0%, #60616f 100%); }
+        .bg-purple { background: linear-gradient(135deg, #9b59b6 0%, #7d3c98 100%); }
+        .bg-pink { background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%); }
+
+        /* Collapse button styling */
+        .btn-collapse {
+            position: relative;
+            padding-right: 2rem;
+        }
+        
+        .btn-collapse::after {
+            content: "\f078"; /* FontAwesome chevron-down icon */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-collapse[aria-expanded="true"]::after {
+            content: "\f077"; /* FontAwesome chevron-up icon */
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        /* Add this to your existing CSS */
+  
+/* Profile Section Styles */
+    .profile-section {
+        text-align: center;
+        padding: 25px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+    }
+
+    .profile-img-container {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+
+    .profile-img {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .profile-img:hover {
+        transform: scale(1.05);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .profile-badge {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid white;
+        color: white;
+        font-size: 12px;
+    }
+
+    .profile-name {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 5px;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+    }
+
+    .profile-role {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: rgba(0, 0, 0, 0.2);
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 15px;
+    }
+
+
+
+
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-brand">SalesPredictor</div>
+
+           <!-- Profile Section -->
+    
+ <div class="profile-section">
+        <div class="profile-img-container">
+            <img src="https://i.pravatar.cc/250?u={{ user_data.get('email', 'default') }}" 
+                 alt="Profile Image" 
+                 class="profile-img">
+            <div class="profile-badge">
+                <i class="fas fa-user-shield"></i>
+            </div>
+        </div>
+        <!-- <div class="profile-name">{{ user_data.get('display_name', 'Admin') }}</div> -->
+        <div class="profile-role">{{ user_data.get('role', 'admin')|upper }}</div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <div class="user-greeting px-4 py-3">You're in Control
+        <i class="fas fa-brain"></i>
+        </div>
+    
+        <!-- Main Navigation Links -->
+        <div class="nav-group">
+            <a href="{{ url_for('dashboard') }}" class="sidebar-item {% if request.path == url_for('dashboard') %}active{% endif %}">
+                <i class="fas fa-tachometer-alt"></i> DASHBOARD
+            </a>
+            <a href="{{ url_for('home') }}" class="sidebar-item {% if request.path == url_for('home') %}active{% endif %}">
+                <i class="fas fa-chart-line"></i> PREDICT
+            </a>
+            <a href="{{ url_for('settings') }}" class="sidebar-item {% if request.path == url_for('settings') %}active{% endif %}">
+                <i class="fas fa-cog"></i> SETTINGS
+            </a>
+        </div>
+    
+        <!-- Admin Link (indented) -->
+        {% if session.get('role') == 'admin' %}
+        <div class="nav-group admin-group">
+            <a href="{{ url_for('admin') }}" class="sidebar-item admin-link {% if request.path == url_for('admin') %}active{% endif %}">
+                <i class="fas fa-user-shield"></i> ADMIN
+            </a>
+        </div>
+        {% endif %}
+    
+        <!-- Logout Link -->
+        <div class="nav-group logout-group">
+            <a href="{{ url_for('logout') }}" class="sidebar-item">
+                <i class="fas fa-sign-out-alt"></i> LOGOUT
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1>Admin Panel</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+
+
+              <div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card stat-card bg-primary">
+            <div class="card-body">
+                <div class="stat-title">Total Users</div>
+                <div class="stat-value">{{ total_users }}</div>
+                <i class="fas fa-users stat-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card bg-success">
+            <div class="card-body">
+                <div class="stat-title">Active Users</div>
+                <div class="stat-value">{{ active_users }}</div>
+                <i class="fas fa-user-check stat-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card bg-info">
+            <div class="card-body">
+                <div class="stat-title">Total Predictions</div>
+                <div class="stat-value">{{ total_predictions }}</div>
+                <i class="fas fa-chart-line stat-icon"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <!-- User Management -->
+        <!-- <div class="card mb-4">
+<div class="card-header bg-light d-flex justify-content-between align-items-center">
+    <h5 class="mb-0 d-flex align-items-center gap-3">
+        <i class="fas fa-users me-2"></i> User Management
+    </h5>
+
+        <div>
+        <button class="btn btn-sm btn-success me-2" type="button" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            <i class="fas fa-plus me-1"></i> Add User
+        </button>
+        <button class="btn btn-sm btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#userManagement">
+            <i class="fas fa-chevron-down"></i>
+        </button>
+    </div>
+
+
+
+    <button class="btn btn-sm btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#userManagement">
+        <i class="fas fa-chevron-down"></i>
+    </button>
+
+   
+</div>
+
+
+
+
+<div id="userManagement" class="collapse show">
+             <div class="card-body">
+                 <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>UID</th>
+                                    <th>Email</th>
+                                    <th>Display Name</th>
+                                    <th>Role</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for uid, user in users.items() %}
+                                <tr>
+                                    <td>{{ uid }}</td>
+                                    <td>{{ user.get('email', 'N/A') }}</td>
+                                    <td>{{ user.get('display_name', 'N/A') }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'primary' if user.get('role') == 'admin' else 'secondary' }}">
+                                            {{ user.get('role', 'user') }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <a href="/admin/edit_user/{{ uid }}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <form action="{{ url_for('delete_user', uid=uid) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-trash-alt"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         -->
+
+
+
+
+<div class="card mb-4">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 d-flex align-items-center gap-3">
+            <i class="fas fa-users me-2"></i> User Management
+        </h5>
+        <div>
+            <button class="btn btn-sm btn-success me-2" type="button" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                <i class="fas fa-plus me-1"></i> Add User
+            </button>
+            <button class="btn btn-sm btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#userManagement">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="userManagement" class="collapse show">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>UID</th>
+                            <th>Email</th>
+                            <th>Display Name</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for uid, user in users.items() %}
+                        <tr>
+                            <td>{{ uid }}</td>
+                            <td>{{ user.get('email', 'N/A') }}</td>
+                            <td>{{ user.get('display_name', 'N/A') }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'primary' if user.get('role') == 'admin' else 'secondary' }}">
+                                    {{ user.get('role', 'user') }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a href="/admin/edit_user/{{ uid }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <form action="{{ url_for('delete_user', uid=uid) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash-alt"></i> Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!-- Forecast Management -->
+        <div class="card mb-4">
+<div class="card-header bg-light d-flex justify-content-between align-items-center">
+    <h5 class="mb-0 d-flex align-items-center gap-3">
+        <i class="fas fa-chart-line me-2"></i> Forecast Management
+    </h5>
+    <button class="btn btn-sm btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#forecastManagement">
+        <i class="fas fa-chevron-down"></i>
+    </button>
+</div>
+            <div id="forecastManagement" class="collapse">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Total Forecasts: <span class="badge bg-primary">{{ forecasts|length }}</span></h5>
+                        <form action="/admin/clear_forecasts" method="POST" onsubmit="return confirm('Are you sure you want to clear all forecasts?');">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash-alt me-1"></i> Clear All Forecasts
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+    <!-- Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('add_user') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="display_name" class="form-label">Display Name</label>
+                        <input type="text" class="form-control" id="display_name" name="display_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-select" id="role" name="role">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

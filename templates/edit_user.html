@@ -1,0 +1,349 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SalesPredictor - Settings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --header-height: 80px;
+            --card-border-radius: 10px;
+        }
+        
+        body { 
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin-left: var(--sidebar-width);
+        }
+        
+        .sidebar {
+            position: fixed;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: linear-gradient(180deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            left: 0;
+            top: 0;
+        }
+        
+        .sidebar-brand {
+            padding: 1rem 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-right: 4rem;
+            letter-spacing: 0.05rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-item {
+            padding: 0.75rem 1.7rem;
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            
+        }
+        
+        .sidebar-item:hover, .sidebar-item.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-item i {
+            margin-right: 10px;
+        }
+        
+        .main-content {
+            padding: 20px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: var(--card-border-radius);
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            padding: 1rem 1.35rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            border: none;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);
+            border: none;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #858796 0%, #60616f 100%);
+            border: none;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+            border: none;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        h1 {
+            color: #2e3a4e;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .form-control, .form-select {
+            border-radius: var(--card-border-radius);
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .alert {
+            border-radius: var(--card-border-radius);
+        }
+        
+        .api-key-input {
+            position: relative;
+        }
+        
+        .api-key-input i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        
+        .api-key-input input {
+            padding-left: 35px;
+        }
+        
+        .badge-admin {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        }
+        
+        .badge-user {
+            background: linear-gradient(135deg, #858796 0%, #60616f 100%);
+        }
+        
+        .accordion-button:not(.collapsed) {
+            background-color: transparent;
+            box-shadow: none;
+        }
+        
+        .accordion-button:focus {
+            box-shadow: none;
+            border-color: transparent;
+        }
+        
+        .user-greeting {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+
+        
+        /* Profile Section Styles */
+    .profile-section {
+        text-align: center;
+        padding: 25px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+    }
+
+    .profile-img-container {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+
+    .profile-img {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .profile-img:hover {
+        transform: scale(1.05);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .profile-badge {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid white;
+        color: white;
+        font-size: 12px;
+    }
+
+    .profile-name {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 5px;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+    }
+
+    .profile-role {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: rgba(0, 0, 0, 0.2);
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 15px;
+    }
+        
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-brand">SalesPredictor</div>
+<!-- Profile Section -->
+    
+ <div class="profile-section">
+        <div class="profile-img-container">
+            <img src="https://i.pravatar.cc/250?u={{ user_data.get('email', 'default') }}" 
+                 alt="Profile Image" 
+                 class="profile-img">
+            <div class="profile-badge">
+                <i class="fas fa-user-shield"></i>
+            </div>
+        </div>
+        <div class="profile-name">{{ user_data.get('display_name', 'User') }}</div>
+      
+    </div>
+
+
+
+        <div class="user-greeting px-4 py-3">Hello {{ user_data.get('display_name', 'User') }}</div>
+        
+        <!-- Main Navigation Links -->
+        <div class="nav-group">
+            <a href="{{ url_for('dashboard') }}" class="sidebar-item">
+                <i class="fas fa-tachometer-alt"></i> DASHBOARD
+            </a>
+            <a href="{{ url_for('settings') }}" class="sidebar-item active">
+                <i class="fas fa-cog"></i> SETTINGS
+            </a>
+            <a href="{{ url_for('home') }}" class="sidebar-item">
+                <i class="fas fa-chart-line"></i> PREDICT
+            </a>
+        </div>
+
+           {% if session.get('role') == 'admin' %}
+        <div class="nav-group admin-group">
+            <a href="{{ url_for('admin') }}" class="sidebar-item admin-link {% if request.path == url_for('admin') %}active{% endif %}">
+                <i class="fas fa-user-shield"></i> ADMIN
+            </a>
+        </div>
+        {% endif %}
+        
+        <!-- Logout Link -->
+        <div class="nav-group logout-group">
+            <a href="{{ url_for('logout') }}" class="sidebar-item">
+                <i class="fas fa-sign-out-alt"></i> LOGOUT
+            </a>
+        </div>
+
+
+        
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1>Edit User</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Edit User Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ user_data.get('email', '') }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="display_name" class="form-label">Display Name</label>
+                        <input type="text" class="form-control" id="display_name" name="display_name" value="{{ user_data.get('display_name', '') }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="company_name" class="form-label">Company Name</label>
+                        <input type="text" class="form-control" id="company_name" name="company_name" value="{{ user_data.get('company_name', '') }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="user" {% if user_data.get('role') == 'user' %}selected{% endif %}>User</option>
+                            <option value="admin" {% if user_data.get('role') == 'admin' %}selected{% endif %}>Admin</option>
+                        </select>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <a href="{{ url_for('admin') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

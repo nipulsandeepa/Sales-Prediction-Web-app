@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SalesPredictor</title>
+ 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+
+
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --header-height: 80px;
+            --card-border-radius: 10px;
+        }
+        
+        body { 
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .sidebar {
+            position: fixed;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: linear-gradient(180deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-brand {
+            padding: 1rem 1.5rem;
+            font-size: 1.2rem;
+            margin-right: 4rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.05rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-item {
+            padding: 0.75rem 1.5rem;
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-item:hover, .sidebar-item.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            margin-bottom: 20px;
+            border-radius: var(--card-border-radius);
+        }
+        
+        .user-greeting {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .card {
+            border: none;
+            border-radius: var(--card-border-radius);
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            padding: 1rem 1.35rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .stat-card {
+            color: white;
+            border-radius: var(--card-border-radius);
+            overflow: hidden;
+        }
+        
+        .stat-card .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-card .stat-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card .stat-icon {
+            font-size: 2rem;
+            opacity: 0.3;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+        
+        .chart-container { 
+            position: relative; 
+            height: 300px; 
+            width: 100%; 
+        }
+        
+        .table-responsive { 
+            max-height: 400px; 
+        }
+        
+        /* Color classes for stat cards */
+        .bg-primary { background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); }
+        .bg-success { background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%); }
+        .bg-info { background: linear-gradient(135deg, #36b9cc 0%, #258391 100%); }
+        .bg-warning { background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%); }
+        .bg-danger { background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%); }
+        .bg-secondary { background: linear-gradient(135deg, #858796 0%, #60616f 100%); }
+        .bg-purple { background: linear-gradient(135deg, #9b59b6 0%, #7d3c98 100%); }
+        .bg-pink { background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%); }
+
+
+
+/* Profile Section Styles */
+    .profile-section {
+        text-align: center;
+        padding: 25px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+    }
+
+    .profile-img-container {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+
+    .profile-img {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .profile-img:hover {
+        transform: scale(1.05);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .profile-badge {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid white;
+        color: white;
+        font-size: 12px;
+    }
+
+    .profile-name {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 5px;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+    }
+
+    .profile-role {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: rgba(0, 0, 0, 0.2);
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 15px;
+    }
+
+
+
+
+    </style>
+</head>
+<body>
+    
+      <div id="alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
+    <div class="sidebar">
+    <div class="sidebar-brand">SalesPredictor</div>
+
+  
+
+          
+ <div class="profile-section">
+        <div class="profile-img-container">
+            <img src="https://i.pravatar.cc/250?u={{ user_data.get('email', 'default') }}" 
+                 alt="Profile Image" 
+                 class="profile-img">
+            <div class="profile-badge">
+                <i class="fas fa-user-shield"></i>
+            </div>
+        </div>
+        <div class="profile-name">{{ user_data.get('display_name', 'User') }}</div>
+       
+    </div>
+
+
+
+
+       <div class="user-greeting px-4 py-3">Features
+       <i class="fas fa-hand-paper"></i> 
+       </div>
+ 
+        <div class="nav-group">
+            <a href="{{ url_for('dashboard') }}" class="sidebar-item {% if request.path == url_for('dashboard') %}active{% endif %}">
+                <i class="fas fa-tachometer-alt"></i> DASHBOARD
+            </a>
+            <a href="{{ url_for('home') }}" class="sidebar-item {% if request.path == url_for('home') %}active{% endif %}">
+                <i class="fas fa-chart-line"></i> PREDICT
+            </a>
+            <a href="{{ url_for('settings') }}" class="sidebar-item {% if request.path == url_for('settings') %}active{% endif %}">
+                <i class="fas fa-cog"></i> SETTINGS
+            </a>
+        </div>
+
+      
+       {% if session.get('role') == 'admin' %} 
+        <div class="nav-group admin-group">
+            <a href="{{ url_for('admin') }}" class="sidebar-item admin-link {% if request.path == url_for('admin') %}active{% endif %}">
+                <i class="fas fa-user-shield"></i> ADMIN
+            </a>
+        </div>
+        {% endif %}
+    
+
+        <div class="nav-group logout-group">
+            <a href="{{ url_for('logout') }}" class="sidebar-item">
+                <i class="fas fa-sign-out-alt"></i> LOGOUT
+            </a>
+        </div>
+    </div>
+
+
+    <div class="main-content">
+        <div class="header">
+            <div class="user-greeting">Dashboard</div>
+            <div>
+                <a href="{{ url_for('logout') }}" class="btn btn-sm btn-outline-secondary">Logout</a>
+            </div>
+        </div>
+
+        {% if message %}
+        <div class="alert alert-info" role="alert">
+            {{ message }}
+        </div>
+        {% endif %}
+
+      
+        <div class="row">
+         
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">User Summary</div>
+                    <div class="card-body">
+                        <p class="card-text">Logged in as: {{ session.get('email', 'Not set') }}</p>      
+                    </div>
+                </div>
+            </div>
+            
+          
+            <div class="col-md-3">
+                <div class="card stat-card bg-primary">
+                    <div class="card-body">
+                        <div class="stat-title"><b>Total Predictions</b></div>
+                        <div class="stat-value">{{ total_predictions }}</div>
+                        <i class="fas fa-chart-line stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+            
+        
+            <div class="col-md-3">
+                <div class="card stat-card bg-success">
+                    <div class="card-body">
+                        <div class="stat-title"><b>Total Revenue</b></div>
+                        <div class="stat-value">${{ total_revenue|round(2) }}</div>
+                        <i class="fas fa-dollar-sign stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      
+        <div class="row">
+           
+            <div class="col-md-4">
+                <div class="card stat-card bg-info">
+                    <div class="card-body">
+                        <div class="stat-title"><b>Latest Predicted Revenue</b></div>
+                        <div class="stat-value">
+                            {% if prediction_data and prediction_data.prediction is defined %}
+                                ${{ prediction_data.prediction|round(2) }}
+                            {% else %}
+                                $0.00
+                            {% endif %}
+                        </div>
+                        <i class="fas fa-coins stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+            
+         
+            <div class="col-md-4">
+                <div class="card stat-card bg-warning">
+                    <div class="card-body">
+                        <div class="stat-title"><b>Highest Predicted Revenue</b></div>
+                        <div class="stat-value">${{ highest_predicted|round(2) }}</div>
+                        <i class="fas fa-dollar-sign stat-icon"></i>
+
+                    </div>
+                </div>
+            </div>
+            
+          
+            <div class="col-md-4">
+                <div class="card stat-card bg-danger">
+                    <div class="card-body">
+                        <div class="stat-title">Avg. Predicted Revenue</div>
+                        <div class="stat-value">${{ avg_predicted_revenue|round(2) }}</div>
+                        <i class="fas fa-chart-pie stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+     
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">Visualizations</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <canvas id="revenueTrendChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <canvas id="categoryDistributionChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <canvas id="orderChannelChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <canvas id="predictionConfidenceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+     
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">Forecast History</div>
+                    <div class="card-body">
+                        <button class="btn btn-primary mb-3" onclick="toggleTable()">Toggle Table</button>
+                        <div class="table-responsive" id="forecastTable" style="display: none;">
+                            {% if forecasts %}
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Product ID</th>
+                                        <th>Product Name</th> 
+                                        <th>Predicted Revenue</th>
+                                        <th>Date</th>
+                                        <th>Category</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product_id, data in forecasts.items() %}
+                                    <tr>
+                                        <td>{{ product_id }}</td>
+                                        <td>{{ data.ProductName|default('Unnamed Product') }}</td>
+                                        <td>${{ data.predictedRevenue|default(0)|round(2) }}</td>
+                                        <td>{{ data.date|default('N/A') }}</td>
+                                        <td>{{ data.Category|default('N/A') }}</td>
+                                          
+
+                                        <td>
+    <form class="delete-form" action="/delete_prediction/{{ product_id }}" method="POST">
+        <input type="hidden" name="_method" value="DELETE">
+        <button type="submit" class="btn btn-sm btn-danger">
+            <i class="fas fa-trash"></i> Delete
+        </button>
+    </form>
+</td>
+                                  
+
+
+
+
+
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% else %}
+                            <p>No forecasts available.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">Data Export</div>
+                    <div class="card-body">
+                        <a href="{{ url_for('export_csv') }}" class="btn btn-success">Export to CSV</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        
+    </div>
+
+
+    <script src="https://kit.fontawesome.com/68fdeb0c14.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleTable() {
+            const table = document.getElementById('forecastTable');
+            table.style.display = table.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Revenue Trend Chart (Line Chart)
+        const revenueTrendChart = new Chart(document.getElementById('revenueTrendChart'), {
+            type: 'line',
+            data: {
+                labels: {{ order_channel_dates|tojson }},
+                datasets: [{
+                    label: 'Revenue Trend',
+                    data: {{ prediction_data.predictions|default([0, 0])|tojson }},
+                    borderColor: '#4e73df',
+                    backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Revenue ($)' } },
+                    x: { title: { display: true, text: 'Date' } }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        }); 
+
+        // Category Distribution Chart (Pie Chart)
+        const categoryDistributionChart = new Chart(document.getElementById('categoryDistributionChart'), {
+            type: 'pie',
+            data: {
+                labels: {{ category_labels|tojson }},
+                datasets: [{
+                    label: 'Category Revenue',
+                    data: {{ category_values|tojson }},
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right' },
+                    title: { display: false }
+                }
+            }
+        });
+
+        // Order Channel Chart (Stacked Bar Chart)
+        const orderChannelChart = new Chart(document.getElementById('orderChannelChart'), {
+            type: 'bar',
+            data: {
+                labels: {{ order_channel_dates|tojson }},
+                datasets: [
+                    {
+                        label: 'Home Appliances',
+                        data: {{ order_channel_others|tojson }},
+                        backgroundColor: '#858796'
+                    },
+                    {
+                        label: 'Electronics Items',
+                        data: {{ order_channel_mobile|tojson }},
+                        backgroundColor: '#1cc88a'
+                    },
+                    {
+                        label: 'Clothing Items',
+                        data: {{ order_channel_website|tojson }},
+                        backgroundColor: '#4e73df'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true, title: { display: true, text: 'Date' } },
+                    y: { stacked: true, beginAtZero: true, title: { display: true, text: 'Revenue ($)' } }
+                },
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: false }
+                }
+            }
+        });
+
+        // Prediction Confidence Chart (Line Chart with Confidence Intervals)
+        const predictionConfidenceChart = new Chart(document.getElementById('predictionConfidenceChart'), {
+            type: 'line',
+            data: {
+                labels: {{ order_channel_dates|tojson }},
+                datasets: [
+                    {
+                        label: 'Predicted Revenue',
+                        data: {{ prediction_data.predictions|default([0, 0])|tojson }},
+                        borderColor: '#4e73df',
+                        backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Upper Bound',
+                        data: {{ upper_bounds|tojson }},
+                        borderColor: '#36b9cc',
+                        borderDash: [5, 5],
+                        fill: false
+                    },
+                    {
+                        label: 'Lower Bound',
+                        data: {{ lower_bounds|tojson }},
+                        borderColor: '#e74a3b',
+                        borderDash: [5, 5],
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Revenue ($)' } },
+                    x: { title: { display: true, text: 'Date' } }
+                },
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: false }
+                }
+            }
+        });
+    </script>
+
+
+    <script>
+
+    document.querySelectorAll('.delete-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const btn = this.querySelector('button');
+        const row = this.closest('tr');
+        const productId = this.action.split('/').pop(); // Extract product ID from URL
+
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btn.disabled = true;
+
+        fetch(this.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-HTTP-Method-Override': 'DELETE'
+            },
+            body: new URLSearchParams(new FormData(this))
+        })
+        .then(response => response.json())
+        .then(data => {
+           if (data.success) {
+                // Replace the animation code with a page reload
+                window.location.reload();  // <-- ADD THIS LINE
+            } else {
+                showAlert(data.error || 'Failed to delete', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            showAlert('An error occurred', 'danger');
+        })
+        .finally(() => {
+            btn.innerHTML = '<i class="fas fa-trash"></i>';
+            btn.disabled = false;
+        });
+    });
+});
+
+function showAlert(message, type) {
+    const alertContainer = document.getElementById('alert-container');
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible fade show`;
+    alert.role = 'alert';
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    alertContainer.appendChild(alert);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        alert.remove();
+    }, 5000);
+}
+
+function updateStatsAfterDeletion() {
+    // Update the total predictions count
+    const totalPredictionsElement = document.querySelector('.stat-card.bg-primary .stat-value');
+    if (totalPredictionsElement) {
+        const currentCount = parseInt(totalPredictionsElement.textContent);
+        totalPredictionsElement.textContent = currentCount - 1;
+    }
+    
+    // Note: For more complex updates (like revenue), you might need to:
+    // 1. Make an AJAX request to get updated stats
+    // 2. Or refresh the relevant charts
+}
+
+
+</script>
+
+</body>
+</html> 
+
+ 
